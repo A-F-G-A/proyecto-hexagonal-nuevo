@@ -1,15 +1,22 @@
 package com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli;
 
+import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.CreateProductHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.CreateUserHandler;
+import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.DeleteProductHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.DeleteUserHandler;
+import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.FindProductByIdHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.FindUserByIdHandler;
+import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.ListProductsHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.ListUsersHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.LoginHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.OperationHandler;
+import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.UpdateProductHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.handler.UpdateUserHandler;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.io.ConsoleIO;
+import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.io.ProductResponsePrinter;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.io.UserResponsePrinter;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.cli.menu.MenuOption;
+import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.controller.ProductController;
 import com.jcaa.usersmanagement.infrastructure.entrypoint.desktop.controller.UserController;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Map;
@@ -22,18 +29,20 @@ public final class UserManagementCli {
   private static final String BANNER =
       """
       ==========================================
-           Users Management System
+           Users & Products Management System
       ==========================================""";
 
   private static final String MENU_BORDER = "  ==========================================";
 
   private final UserController userController;
+  private final ProductController productController;
   private final ConsoleIO console;
 
   public void start() {
     console.println(BANNER);
-    final UserResponsePrinter printer = new UserResponsePrinter(console);
-    runLoop(buildHandlers(printer));
+    final UserResponsePrinter userPrinter = new UserResponsePrinter(console);
+    final ProductResponsePrinter productPrinter = new ProductResponsePrinter(console);
+    runLoop(buildHandlers(userPrinter, productPrinter));
   }
 
   private void runLoop(final Map<MenuOption, OperationHandler> handlers) {
@@ -67,14 +76,21 @@ public final class UserManagementCli {
     }
   }
 
-  private Map<MenuOption, OperationHandler> buildHandlers(final UserResponsePrinter printer) {
-    return Map.of(
-        MenuOption.LIST_USERS,  new ListUsersHandler(userController, printer),
-        MenuOption.FIND_USER,   new FindUserByIdHandler(userController, console, printer),
-        MenuOption.CREATE_USER, new CreateUserHandler(userController, console, printer),
-        MenuOption.UPDATE_USER, new UpdateUserHandler(userController, console, printer),
-        MenuOption.DELETE_USER, new DeleteUserHandler(userController, console),
-        MenuOption.LOGIN,       new LoginHandler(userController, console, printer));
+  private Map<MenuOption, OperationHandler> buildHandlers(
+      final UserResponsePrinter userPrinter,
+      final ProductResponsePrinter productPrinter) {
+    return Map.ofEntries(
+        Map.entry(MenuOption.LIST_USERS,     new ListUsersHandler(userController, userPrinter)),
+        Map.entry(MenuOption.FIND_USER,      new FindUserByIdHandler(userController, console, userPrinter)),
+        Map.entry(MenuOption.CREATE_USER,    new CreateUserHandler(userController, console, userPrinter)),
+        Map.entry(MenuOption.UPDATE_USER,    new UpdateUserHandler(userController, console, userPrinter)),
+        Map.entry(MenuOption.DELETE_USER,    new DeleteUserHandler(userController, console)),
+        Map.entry(MenuOption.LOGIN,          new LoginHandler(userController, console, userPrinter)),
+        Map.entry(MenuOption.LIST_PRODUCTS,  new ListProductsHandler(productController, productPrinter)),
+        Map.entry(MenuOption.FIND_PRODUCT,   new FindProductByIdHandler(productController, console, productPrinter)),
+        Map.entry(MenuOption.CREATE_PRODUCT, new CreateProductHandler(productController, console, productPrinter)),
+        Map.entry(MenuOption.UPDATE_PRODUCT, new UpdateProductHandler(productController, console, productPrinter)),
+        Map.entry(MenuOption.DELETE_PRODUCT, new DeleteProductHandler(productController, console)));
   }
 
   private void printMenu() {

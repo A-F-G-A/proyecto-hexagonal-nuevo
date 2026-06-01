@@ -3,11 +3,11 @@
 -- Gestión de Usuarios - Arquitectura Hexagonal
 -- =============================================
 
-CREATE DATABASE IF NOT EXISTS crud_usuarios
+CREATE DATABASE IF NOT EXISTS aeropuerto
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
-USE crud_usuarios;
+USE aeropuerto;
 
 CREATE TABLE IF NOT EXISTS users (
     id          VARCHAR(36)  NOT NULL PRIMARY KEY,
@@ -43,4 +43,12 @@ CREATE TABLE IF NOT EXISTS products (
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- ALTER TABLE para agregar columnas faltantes (si la tabla ya existe)
+-- =============================================
+
+ALTER TABLE products
+ADD COLUMN IF NOT EXISTS created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN IF NOT EXISTS updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 

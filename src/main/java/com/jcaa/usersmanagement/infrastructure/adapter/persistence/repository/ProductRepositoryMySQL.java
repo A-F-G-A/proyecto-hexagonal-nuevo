@@ -79,7 +79,7 @@ public final class ProductRepositoryMySQL
       }
       return Optional.of(ProductPersistenceMapper.fromResultSetToModel(resultSet));
     } catch (final SQLException exception) {
-      throw PersistenceException.becauseFindByIdFailed(productId.value(), exception);
+      throw PersistenceException.becauseFindProductByIdFailed(productId.value(), exception);
     }
   }
 
@@ -99,7 +99,7 @@ public final class ProductRepositoryMySQL
       statement.setString(1, productId.value());
       statement.executeUpdate();
     } catch (final SQLException exception) {
-      throw PersistenceException.becauseDeleteFailed(productId.value(), exception);
+      throw PersistenceException.becauseDeleteProductFailed(productId.value(), exception);
     }
   }
 
@@ -111,7 +111,7 @@ public final class ProductRepositoryMySQL
       statement.setBigDecimal(4, dto.price());
       statement.executeUpdate();
     } catch (final SQLException exception) {
-      throw PersistenceException.becauseSaveFailed(dto.id(), exception);
+      throw PersistenceException.becauseSaveProductFailed(dto.id(), exception);
     }
   }
 
@@ -123,7 +123,7 @@ public final class ProductRepositoryMySQL
       statement.setString(4, dto.id());
       statement.executeUpdate();
     } catch (final SQLException exception) {
-      throw PersistenceException.becauseUpdateFailed(dto.id(), exception);
+      throw PersistenceException.becauseUpdateProductFailed(dto.id(), exception);
     }
   }
 

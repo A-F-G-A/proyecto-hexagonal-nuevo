@@ -13,7 +13,7 @@ public record ProductId(String value) {
 
   private static void validateNotEmpty(final String normalizedValue) {
     if (normalizedValue.isEmpty()) {
-      throw InvalidProductException.becauseNameIsEmpty();
+      throw InvalidProductException.becauseIdIsEmpty();
     }
   }
 
